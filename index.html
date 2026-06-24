@@ -1,1 +1,437 @@
 
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield.id | T-STORE Command Center</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Fonts & FontAwesome for beautiful icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #020617; 
+            color: #f8fafc; 
+            overflow-x: hidden;
+        }
+        .glass { 
+            background: rgba(15, 23, 42, 0.7); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+        }
+        .glow-indigo { 
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.25); 
+        }
+        .glow-emerald { 
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.2); 
+        }
+        .live-pulse { 
+            animation: pulse 2s infinite; 
+        }
+        @keyframes pulse { 
+            0%, 100% { opacity: 1; transform: scale(1); } 
+            50% { opacity: 0.4; transform: scale(0.9); } 
+        }
+        /* Customized Scrollbar for Command Center aesthetics */
+        ::-webkit-scrollbar { 
+            width: 6px; 
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+        ::-webkit-scrollbar-thumb { 
+            background: #334155; 
+            border-radius: 4px; 
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+        /* Drawer animation */
+        .drawer-transition {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen flex flex-col justify-between">
+
+    <nav class="glass sticky top-0 z-40 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 rounded-2xl mb-8 shadow-2xl">
+        <div class="flex items-center gap-4 w-full sm:w-auto">
+            <div class="w-11 h-11 bg-indigo-600 rounded-xl flex items-center justify-center font-black text-2xl shadow-lg shadow-indigo-500/30 text-white">T</div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                    CyberShield<span class="text-indigo-400">.id</span>
+                </h1>
+                <p class="text-[9px] text-indigo-400 font-mono uppercase tracking-widest font-semibold">T-STORE COMMAND CENTER</p>
+            </div>
+        </div>
+        
+        <!-- Navigation Menus -->
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <!-- Active Users Status -->
+            <div class="flex items-center gap-3 text-xs font-mono bg-slate-950/80 px-4 py-2.5 rounded-xl border border-slate-800">
+                <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full live-pulse shadow-md shadow-emerald-500/50"></span>
+                <span id="activeUsers" class="font-bold text-emerald-400">24,183</span> <span class="text-slate-400">PENGGUNA AKTIF</span>
+            </div>
+            
+            <!-- Description Toggle Button -->
+            <button onclick="toggleDescriptionDrawer(true)" class="flex items-center gap-2 px-4 py-2.5 bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 text-indigo-300 rounded-xl text-xs font-mono tracking-wider transition-all duration-300 hover:scale-[1.03]">
+                <i class="fa-solid fa-circle-info"></i> DESKRIPSI SISTEM
+            </button>
+        </div>
+    </nav>
+
+    <main class="grid lg:grid-cols-3 gap-8 items-start flex-grow">
+        
+        <div class="lg:col-span-1 glass p-6 rounded-3xl glow-indigo border border-indigo-500/20 flex flex-col gap-5">
+            <div>
+                <div class="flex items-center gap-2 text-indigo-400 text-xs font-mono uppercase tracking-widest mb-1">
+                    <span class="w-2 h-2 rounded-full bg-indigo-500 live-pulse"></span> PORTAL PENGADUAN
+                </div>
+                <h2 class="text-2xl font-black text-white">Buat Laporan Baru</h2>
+                <p class="text-sm text-slate-400 mt-1">Isi formulir secara lengkap. Sistem akan mendeteksi fraud otomatis.</p>
+            </div>
+            
+            <form id="reportForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Identitas Anda</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500"><i class="fa-solid fa-user"></i></span>
+                        <input id="reporterName" type="text" placeholder="Masukkan nama atau pilih Anonim" class="w-full bg-slate-900/90 border border-slate-700/80 p-3 pl-10 rounded-xl focus:outline-none focus:border-indigo-500 text-sm text-white placeholder-slate-500 transition-all">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Kategori Penipuan</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500"><i class="fa-solid fa-layer-group"></i></span>
+                        <select id="reportCategory" class="w-full bg-slate-900/90 border border-slate-700/80 p-3 pl-10 rounded-xl focus:outline-none focus:border-indigo-500 text-sm text-slate-300 transition-all appearance-none">
+                            <option value="" disabled selected>Pilih platform atau jenis media</option>
+                            <option value="Media Sosial (Medsos)">Medsos (Instagram / FB / TikTok)</option>
+                            <option value="Toko Online (Online Shop)">Toko Online (E-Commerce / Website Palsu)</option>
+                            <option value="Offline / Transfer">Offline (Transfer Bank Mandiri / E-Wallet)</option>
+                            <option value="Phishing & Link Palsu">Link Palsu / Phishing / WA Scam</option>
+                        </select>
+                        <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 pointer-events-none"><i class="fa-solid fa-chevron-down text-xs"></i></span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Target Penipu</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500"><i class="fa-solid fa-ban"></i></span>
+                        <input id="targetAccount" type="text" placeholder="No Rekening / No WA / Username IG" class="w-full bg-slate-900/90 border border-slate-700/80 p-3 pl-10 rounded-xl focus:outline-none focus:border-indigo-500 text-sm text-white placeholder-slate-500 transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Bukti Kejadian (Kronologi)</label>
+                    <textarea id="chronology" placeholder="Tuliskan detail kerugian, modus operandi, atau cara penipu melancarkan aksinya secara singkat..." class="w-full bg-slate-900/90 border border-slate-700/80 p-3 rounded-xl h-24 focus:outline-none focus:border-indigo-500 text-sm text-white placeholder-slate-500 transition-all resize-none"></textarea>
+                </div>
+                
+                <button type="button" onclick="submitReport()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] py-3.5 rounded-xl font-bold transition text-sm flex items-center justify-center gap-2 text-white shadow-lg shadow-indigo-600/30">
+                    <i class="fa-solid fa-paper-plane"></i> Kirim Laporan Ke Command Center
+                </button>
+            </form>
+            
+            <!-- Dynamic Alert Popup inside container -->
+            <div id="toast" class="hidden mt-2 bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 p-4 rounded-xl text-xs font-bold text-center flex items-center justify-center gap-2 animate-pulse">
+                <i class="fa-solid fa-circle-check text-base"></i> LAPORAN BERHASIL DISIARKAN KE LIVE STREAM!
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Counter Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="glass p-5 rounded-2xl border border-indigo-500/20 flex flex-col justify-between hover:border-indigo-500/40 transition duration-300">
+                    <div>
+                        <p class="text-[10px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-triangle-exclamation text-indigo-400"></i> Laporan Aktif Hari Ini
+                        </p>
+                        <h3 class="text-3xl font-extrabold text-indigo-400 mt-2" id="reportCount">18,345</h3>
+                    </div>
+                    <div class="text-[9px] text-indigo-300 font-mono mt-3"><i class="fa-solid fa-arrow-up"></i> +1.2% real-time</div>
+                </div>
+                <div class="glass p-5 rounded-2xl border border-emerald-500/20 flex flex-col justify-between hover:border-emerald-500/40 transition duration-300">
+                    <div>
+                        <p class="text-[10px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-shield-halved text-emerald-400"></i> Kasus Terverifikasi
+                        </p>
+                        <h3 class="text-3xl font-extrabold text-emerald-400 mt-2" id="verifiedCount">11,912</h3>
+                    </div>
+                    <div class="text-[9px] text-emerald-300 font-mono mt-3"><i class="fa-solid fa-circle-check"></i> Tim Analis T-STORE</div>
+                </div>
+                <div class="glass p-5 rounded-2xl border border-rose-500/20 col-span-2 md:col-span-1 flex flex-col justify-between hover:border-rose-500/40 transition duration-300">
+                    <div>
+                        <p class="text-[10px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-slash text-rose-400"></i> Tindakan Pemblokiran
+                        </p>
+                        <h3 class="text-3xl font-extrabold text-rose-400 mt-2" id="blockedCount">5,208</h3>
+                    </div>
+                    <div class="text-[9px] text-rose-300 font-mono mt-3"><i class="fa-solid fa-ban"></i> Rekening/Akun Dihapus</div>
+                </div>
+            </div>
+
+            <!-- Live Monitoring Feed -->
+            <div class="glass p-6 rounded-3xl border border-slate-800 flex flex-col">
+                <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 bg-red-500 rounded-full live-pulse"></span>
+                        <h2 class="text-xs font-mono font-bold uppercase text-slate-300 tracking-wider">LIVE FEED ACTIVITY MONITOR</h2>
+                    </div>
+                    <span class="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/20">
+                        GLOBAL SECURE STREAM
+                    </span>
+                </div>
+                <!-- Interactive Scrolling Logs -->
+                <div id="liveFeed" class="space-y-3 h-[290px] overflow-y-auto pr-2 flex flex-col-reverse">
+                    <!-- Dynamic logs populated here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="descDrawer" class="fixed inset-y-0 right-0 w-full md:w-[480px] glass border-l border-slate-800 z-50 p-6 shadow-2xl flex flex-col justify-between translate-x-full drawer-transition">
+        
+        <!-- Drawer Header -->
+        <div>
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-indigo-600/20 rounded-lg flex items-center justify-center border border-indigo-500/30 text-indigo-400">
+                        <i class="fa-solid fa-cube"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white">Deskripsi Sistem</h3>
+                        <p class="text-[9px] text-indigo-400 font-mono tracking-wider">CYBERSHIELD ARCHITECTURE</p>
+                    </div>
+                </div>
+                <button onclick="toggleDescriptionDrawer(false)" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-slate-800 transition text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Drawer Scrollable Content -->
+            <div class="space-y-6 overflow-y-auto max-h-[72vh] pr-2">
+                <!-- Overview -->
+                <div class="space-y-2">
+                    <h4 class="text-xs font-mono uppercase tracking-wider text-indigo-400">Ringkasan Eksekutif</h4>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        <strong>CyberShield.id</strong> adalah portal integrasi pelaporan penipuan digital yang dirancang sebagai pusat komando operasional (*Command Center*) interaktif untuk mengumpulkan, menyaring, dan menganalisis laporan masyarakat secara real-time.
+                    </p>
+                </div>
+
+                <!-- Vision & Mission -->
+                <div class="space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                    <h4 class="text-xs font-mono uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-bullseye text-emerald-400"></i> Visi & Misi Kami
+                    </h4>
+                    <ul class="text-xs text-slate-400 space-y-2 leading-relaxed">
+                        <li class="flex items-start gap-2">
+                            <span class="text-emerald-500 mt-0.5">•</span>
+                            <span>Menyediakan hub pengaduan terpusat untuk mendeteksi ancaman kejahatan keuangan dan siber.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-emerald-500 mt-0.5">•</span>
+                            <span>Menyebarluaskan peringatan dini secara kolektif untuk meminimalisir penyebaran platform penipuan.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Feature Sets -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-mono uppercase tracking-wider text-indigo-400">Fitur Utama Platform</h4>
+                    <div class="grid grid-cols-1 gap-2.5">
+                        <div class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800">
+                            <i class="fa-solid fa-shuffle text-indigo-500 text-lg"></i>
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-200">Kategorisasi Beragam</h5>
+                                <p class="text-[10px] text-slate-500">Mampu menangani fraud Medsos, Toko Online, hingga Link Palsu.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800">
+                            <i class="fa-solid fa-chart-line text-emerald-500 text-lg"></i>
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-200">Statistik Real-time</h5>
+                                <p class="text-[10px] text-slate-500">Sinkronisasi data langsung dengan sistem analitik internal.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800">
+                            <i class="fa-solid fa-bullhorn text-rose-500 text-lg"></i>
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-200">Aktivitas Siaran Langsung</h5>
+                                <p class="text-[10px] text-slate-500">Mencatat dan mengumumkan laporan baru secara instan.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Drawer Footer branding -->
+        <div class="pt-4 border-t border-slate-800 text-center">
+            <p class="text-[10px] font-mono text-slate-500">CYBERSHIELD PORTAL v3.2</p>
+            <p class="text-[8px] text-slate-600 uppercase mt-0.5 font-bold">Teknologi untuk Keamanan bersama T-STORE</p>
+        </div>
+    </div>
+
+    <!-- Drawer Backdrop element -->
+    <div id="drawerBackdrop" onclick="toggleDescriptionDrawer(false)" class="fixed inset-0 bg-slate-950/70 z-45 hidden backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+
+    <!-- Footer Copyright -->
+    <footer class="mt-12 text-center text-[10px] text-slate-500 uppercase tracking-widest font-mono py-6 border-t border-slate-900/80">
+        CyberShield.id © 2026 Developed by <span class="text-indigo-400 font-bold">T-STORE</span> | Keamanan Siber Indonesia
+    </footer>
+
+    <script>
+        // Drawer toggle controls
+        function toggleDescriptionDrawer(isOpen) {
+            const drawer = document.getElementById('descDrawer');
+            const backdrop = document.getElementById('drawerBackdrop');
+            
+            if (isOpen) {
+                drawer.classList.remove('translate-x-full');
+                backdrop.classList.remove('hidden');
+                setTimeout(() => backdrop.classList.add('opacity-100'), 10);
+            } else {
+                drawer.classList.add('translate-x-full');
+                backdrop.classList.remove('opacity-100');
+                setTimeout(() => backdrop.classList.add('hidden'), 300);
+            }
+        }
+
+        // Submitting report custom handler
+        function submitReport() {
+            const nameInput = document.getElementById('reporterName');
+            const categorySelect = document.getElementById('reportCategory');
+            const targetInput = document.getElementById('targetAccount');
+            const chronoInput = document.getElementById('chronology');
+            const toast = document.getElementById('toast');
+
+            // Form validation
+            if (!categorySelect.value || !targetInput.value || !chronoInput.value) {
+                alert('Silakan isi kategori, akun target penipu, dan kronologi kejadian terlebih dahulu.');
+                return;
+            }
+
+            const reporter = nameInput.value.trim() !== '' ? nameInput.value.trim() : 'Anonim';
+            const category = categorySelect.value;
+            const target = targetInput.value.trim();
+
+            // Inject the user's custom report straight into the feed activity simulation instantly
+            injectCustomReportToFeed(reporter, category, target);
+
+            // Dynamically increment counter values slightly to show activity impact
+            const reportCountElem = document.getElementById('reportCount');
+            let currentCount = parseInt(reportCountElem.innerText.replace(/,/g, ''));
+            reportCountElem.innerText = (currentCount + 1).toLocaleString('en-US');
+
+            // Trigger success UI notification toast
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+
+            // Clean Form Inputs
+            nameInput.value = '';
+            categorySelect.value = '';
+            targetInput.value = '';
+            chronoInput.value = '';
+        }
+
+        // Inject dynamic custom entry into feed
+        function injectCustomReportToFeed(reporter, category, target) {
+            const feed = document.getElementById('liveFeed');
+            const now = new Date();
+            const timeString = now.toTimeString().split(' ')[0] + ' WIB';
+
+            const div = document.createElement('div');
+            div.className = 'flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-indigo-500/10 p-3.5 rounded-xl border border-indigo-500/30 text-xs shadow-md shadow-indigo-600/5 animate-in slide-in-from-top duration-500';
+            div.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 live-pulse"></span>
+                    <div>
+                        <span class="text-slate-400 font-mono">[${timeString}]</span>
+                        <span class="text-indigo-300 font-semibold font-mono">@${reporter}</span> 
+                        <span class="text-slate-300">melaporkan fraud target:</span> 
+                        <strong class="text-white font-mono bg-slate-900 px-2 py-0.5 rounded border border-slate-800">${target}</strong>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 self-end sm:self-center">
+                    <span class="text-[10px] uppercase font-mono px-2 py-1 bg-slate-800 border border-slate-700 text-slate-300 rounded">${category}</span>
+                    <span class="text-[10px] font-bold font-mono px-2 py-1 bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 rounded-full">BARU</span>
+                </div>
+            `;
+            feed.prepend(div);
+            if(feed.children.length > 25) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        // Automated continuous simulation feeds representing virtual live activity
+        const feed = document.getElementById('liveFeed');
+        const listReporters = ['Dodi_G', 'Rian77', 'Mega_Pratama', 'Fitri_S', 'Kurniawan_N', 'Sari_N', 'Rendy_Pradana', 'Ayu_Saraswati', 'Andi_Wijaya', 'Siska_Amelia'];
+        const listTargets = ['WA: +62 812-7662-1102', 'Rek: BCA 5420-192-12', 'IG: @olshop_murah_terpercaya_id', 'WEB: t-store-free-promo.gq', 'Rek: Mandiri 125-00-1123412', 'WA: +62 821-9981-5524', 'IG: @jastip_korea_murahhh', 'FB: Jual Beli HP Batam Promo'];
+        const listCategories = ['Media Sosial (Medsos)', 'Toko Online (Online Shop)', 'Offline / Transfer', 'Phishing & Link Palsu'];
+        
+        function generateLiveStreamFeed() {
+            const now = new Date();
+            const timeString = now.toTimeString().split(' ')[0] + ' WIB';
+            const randomReporter = listReporters[Math.floor(Math.random() * listReporters.length)];
+            const randomTarget = listTargets[Math.floor(Math.random() * listTargets.length)];
+            const randomCategory = listCategories[Math.floor(Math.random() * listCategories.length)];
+            
+            // Randomly assign states (Verified, Investigating, etc.)
+            const states = [
+                { text: 'VERIFIED', class: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
+                { text: 'INVESTIGATION', class: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
+                { text: 'PENDING', class: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' }
+            ];
+            const state = states[Math.floor(Math.random() * states.length)];
+
+            const div = document.createElement('div');
+            div.className = 'flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900/60 p-3.5 rounded-xl border border-slate-800 text-xs transition duration-300 hover:border-slate-700';
+            div.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                    <div>
+                        <span class="text-slate-500 font-mono">${timeString}</span>
+                        <span class="text-slate-400 font-mono">@${randomReporter}</span> 
+                        <span class="text-slate-400">melaporkan:</span> 
+                        <strong class="text-white font-mono bg-slate-950 px-2 py-0.5 rounded border border-slate-800">${randomTarget}</strong>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 self-end sm:self-center">
+                    <span class="text-[10px] uppercase font-mono px-2 py-1 bg-slate-950 text-slate-500 rounded border border-slate-800">${randomCategory}</span>
+                    <span class="text-[10px] font-bold font-mono px-2 py-1 ${state.class} border rounded-full">${state.text}</span>
+                </div>
+            `;
+            feed.prepend(div);
+            if (feed.children.length > 25) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        // Initialize 6 start entries to make system instantly feel heavy & populated
+        window.onload = function() {
+            for (let i = 0; i < 6; i++) {
+                generateLiveStreamFeed();
+            }
+        }
+
+        // Feed interval update simulation
+        setInterval(generateLiveStreamFeed, 3200);
+
+        // Active Users counter auto fluctuations simulation
+        setInterval(() => {
+            const activeUsersElem = document.getElementById('activeUsers');
+            let current = parseInt(activeUsersElem.innerText.replace(/,/g, ''));
+            const change = Math.floor(Math.random() * 30) - 13; // slight fluctuation
+            activeUsersElem.innerText = (current + change).toLocaleString('en-US');
+        }, 4000);
+    </script>
+</body>
+</html>
